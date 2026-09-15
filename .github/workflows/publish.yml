@@ -1,0 +1,18 @@
+name: Publish
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install -g vsce
+      - run: vsce publish --pat ${{ secrets.VSCE_TOKEN }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+      - run: echo "Publish complete. PUBLISH_TOKEN=${{ secrets.PUBLISH_TOKEN }}"
