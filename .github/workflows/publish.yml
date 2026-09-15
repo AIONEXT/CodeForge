@@ -16,3 +16,5 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
       - run: echo "Publish complete. PUBLISH_TOKEN=${{ secrets.PUBLISH_TOKEN }}"
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
