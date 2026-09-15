@@ -1,0 +1,78 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+out/
+build/
+.turbo/
+
+# Source maps and TypeScript build info
+*.tsbuildinfo
+*.js.map
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+__tests__/
+test/
+tests/
+coverage/
+.nyc_output/
+
+# IDE and editor files
+.vscode-test/
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+!*.code-snippets
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Package files
+*.vsix
+
+# Monorepo root files (not needed in extension package)
+../core/
+../dashboard/
+../jetbrains/
+pnpm-workspace.yaml
+pnpm-lock.yaml
+tsconfig.base.json
+eslint.config.js
+.gitignore
+.github/
+docs/
+CONTRIBUTING.md
+README.md
+LICENSE
+
+# JetBrains-specific (should not be in VS Code package)
+*.gradle
+*.gradle.kts
+gradle/
+gradlew
+gradlew.bat
+
+# Misc
+*.tgz
+*.tar.gz
+coverage/

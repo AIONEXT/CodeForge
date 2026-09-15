@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+out/
+build/
+.turbo/
+*.tsbuildinfo
+
+# IDE and editor files
+.vscode-test/
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+
+# Package files
+*.vsix
+
+# Gradle (JetBrains plugin)
+.gradle/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test and coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Turbo
+.turbo/
+
+# Misc
+*.tgz
+*.tar.gz
+*.pyc
+__pycache__/

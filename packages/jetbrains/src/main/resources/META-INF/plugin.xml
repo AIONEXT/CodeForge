@@ -1,0 +1,34 @@
+<idea-plugin>
+    <id>com.codeforge</id>
+    <name>CodeForge</name>
+    <version>1.0.0</version>
+    <vendor>CodeForge</vendor>
+
+    <description><![CDATA[
+        Records terminal commands, editor changes, and provides a recall dashboard
+        for reviewing your project history. Works with the CodeForge ecosystem.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.terminal</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService
+            serviceImplementation="com.codeforge.CodeForgeProjectManager"
+            overrides="false"/>
+
+        <toolWindow
+            id="CodeForge Recall"
+            icon="AllIcons.Actions.Lightning"
+            factoryClass="com.codeforge.ui.RecallToolWindowFactory"
+            anchor="right"/>
+
+        <listener
+            class="com.codeforge.ProjectLifecycleListener"
+            topic="com.intellij.openapi.project.ProjectManagerListener"/>
+
+        <notificationGroup id="CodeForge Safety"
+                           displayType="BALLOON"
+                           isLogByDefault="true"/>
+    </extensions>
+</idea-plugin>

@@ -1,0 +1,155 @@
+{
+  "name": "codeforge",
+  "displayName": "CodeForge — Command Recorder & Recall",
+  "description": "Silently records your terminal commands, file changes, and AI prompts. Recalls everything when you return.",
+  "version": "0.1.0",
+  "publisher": "codeforge",
+  "license": "MIT",
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "command recorder",
+    "terminal history",
+    "project recall",
+    "beginner",
+    "learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeforge.openDashboard",
+        "title": "CodeForge: Open Recall Dashboard",
+        "icon": "$(history)"
+      },
+      {
+        "command": "codeforge.startSession",
+        "title": "CodeForge: Start Recording Session"
+      },
+      {
+        "command": "codeforge.stopSession",
+        "title": "CodeForge: Stop Recording Session"
+      },
+      {
+        "command": "codeforge.searchHistory",
+        "title": "CodeForge: Search Command History"
+      },
+      {
+        "command": "codeforge.exportMarkdown",
+        "title": "CodeForge: Export Session as Markdown"
+      },
+      {
+        "command": "codeforge.exportHTML",
+        "title": "CodeForge: Export Session as HTML"
+      },
+      {
+        "command": "codeforge.showGlossary",
+        "title": "CodeForge: Show Glossary"
+      },
+      {
+        "command": "codeforge.checkEnvironment",
+        "title": "CodeForge: Check Project Health"
+      }
+    ],
+    "configuration": {
+      "title": "CodeForge",
+      "properties": {
+        "codeforge.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable CodeForge recording"
+        },
+        "codeforge.recordTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Record terminal commands and outputs"
+        },
+        "codeforge.recordEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Record file saves and renames"
+        },
+        "codeforge.recordAI": {
+          "type": "boolean",
+          "default": true,
+          "description": "Record AI assistant prompts"
+        },
+        "codeforge.recordGit": {
+          "type": "boolean",
+          "default": true,
+          "description": "Record git actions"
+        },
+        "codeforge.skillLevel": {
+          "type": "string",
+          "enum": [
+            "beginner",
+            "intermediate",
+            "advanced",
+            "power"
+          ],
+          "default": "beginner",
+          "description": "Your skill level — adjusts explanation detail"
+        },
+        "codeforge.language": {
+          "type": "string",
+          "default": "en",
+          "description": "Language for explanations (ISO 639-1 code)"
+        },
+        "codeforge.maxStorageMB": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum storage for recordbook in MB"
+        },
+        "codeforge.autoShowDashboard": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically show the recall dashboard when opening a project"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codeforge",
+          "title": "CodeForge",
+          "icon": "$(history)"
+        }
+      ]
+    },
+    "views": {
+      "codeforge": [
+        {
+          "type": "webview",
+          "id": "codeforge.dashboard",
+          "name": "Recall Dashboard"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src/",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "@types/vscode": "^1.137.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@codeforge/core": "file:../core"
+  }
+}

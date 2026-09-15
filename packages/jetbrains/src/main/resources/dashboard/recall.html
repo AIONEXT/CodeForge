@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeForge Recall Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { color: #f78166; font-size: 24px; margin-bottom: 5px; }
+        .subtitle { color: #8b949e; font-size: 14px; margin-bottom: 20px; }
+        .search-box {
+            width: 100%; padding: 12px 16px; background: #161b22;
+            border: 1px solid #30363d; border-radius: 8px;
+            color: #e6edf3; font-size: 15px; margin-bottom: 20px;
+        }
+        .search-box:focus { border-color: #f78166; outline: none; }
+        .session-card {
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 10px; padding: 16px; margin-bottom: 12px;
+        }
+        .session-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 10px;
+        }
+        .session-date { color: #f78166; font-weight: 600; }
+        .session-stats { display: flex; gap: 12px; }
+        .stat { font-size: 13px; color: #8b949e; }
+        .stat strong { color: #e6edf3; }
+        .timeline { margin-top: 10px; }
+        .record {
+            padding: 8px 12px; border-left: 3px solid #30363d;
+            margin-bottom: 6px; border-radius: 0 6px 6px 0;
+            background: #0d1117;
+        }
+        .record.command { border-left-color: #58a6ff; }
+        .record.error { border-left-color: #f85149; }
+        .record.file { border-left-color: #3fb950; }
+        .record.ai { border-left-color: #a371f7; }
+        .record.milestone { border-left-color: #f78166; }
+        .record.git { border-left-color: #d2a8ff; }
+        .record-time { font-size: 11px; color: #8b949e; }
+        .record-label { font-size: 14px; margin-top: 2px; }
+        .record-explanation {
+            font-size: 12px; color: #8b949e;
+            margin-top: 4px; font-style: italic;
+        }
+        .record-command {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 13px; color: #79c0ff;
+        }
+        .record-error-msg { font-size: 13px; color: #f85149; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #8b949e; }
+        .empty-state h2 { color: #e6edf3; margin-bottom: 10px; }
+        .btn {
+            padding: 8px 16px; border-radius: 6px;
+            border: 1px solid #30363d; background: #21262d;
+            color: #e6edf3; cursor: pointer; font-size: 13px;
+        }
+        .btn:hover { background: #30363d; }
+        .btn-primary { background: #f78166; color: #0d1117; border-color: #f78166; }
+        .btn-primary:hover { background: #ff9a76; }
+        .actions { display: flex; gap: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CodeForge Recall</h1>
+        <div class="subtitle">Your project command history and learning record</div>
+
+        <input type="text" class="search-box" placeholder="Search commands, errors, prompts..." id="search" />
+
+        <div class="actions">
+            <button class="btn" onclick="refresh()">Refresh</button>
+            <button class="btn" onclick="exportAs('markdown')">Export MD</button>
+            <button class="btn" onclick="exportAs('html')">Export HTML</button>
+        </div>
+
+        <div id="content">
+            <div class="empty-state">
+                <h2>No Data Yet</h2>
+                <p>Start using the terminal and CodeForge will record your commands automatically.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let recordBook = null;
+
+        function receiveRecordBook(rb) {
+            recordBook = rb;
+            renderRecordBook(rb);
+        }
+
+        function receiveMessage(msg) {
+            if (msg.type === 'searchResults') {
+                renderSearchResults(msg.data);
+            } else if (msg.type === 'exportData') {
+                downloadExport(msg.data);
+            }
+        }
+
+        function refresh() {
+            sendToPlugin('refresh:');
+        }
+
+        function search(query) {
+            if (query.length > 0) {
+                sendToPlugin('search:' + query);
+            } else {
+                renderRecordBook(recordBook);
+            }
+        }
+
+        function exportAs(format) {
+            sendToPlugin('export:' + format);
+        }
+
+        function sendToPlugin(message) {
+            if (window.intellij) {
+                window.intellij.postMessage(message);
+            }
+        }
+
+        function renderRecordBook(rb) {
+            const content = document.getElementById('content');
+            if (!rb || !rb.sessions || rb.sessions.length === 0) {
+                content.innerHTML = '<div class="empty-state"><h2>No Data Yet</h2><p>Start using the terminal and CodeForge will record your commands automatically.</p></div>';
+                return;
+            }
+
+            let html = '';
+            const sessions = [...rb.sessions].reverse();
+
+            for (const session of sessions) {
+                const date = new Date(session.startedAt).toLocaleString();
+                html += '<div class="session-card">';
+                html += '<div class="session-header">';
+                html += '<span class="session-date">' + date + '</span>';
+                html += '<div class="session-stats">';
+                html += '<span class="stat"><strong>' + (session.summary?.commandsRun || 0) + '</strong> commands</span>';
+                html += '<span class="stat"><strong>' + (session.summary?.errorsHit || 0) + '</strong> errors</span>';
+                html += '<span class="stat"><strong>' + (session.summary?.filesModified || 0) + '</strong> files</span>';
+                html += '<span class="stat">' + (session.summary?.duration || '0s') + '</span>';
+                html += '</div></div>';
+
+                html += '<div class="timeline">';
+                const records = [...(session.records || [])].reverse().slice(0, 50);
+                for (const record of records) {
+                    const time = new Date(record.timestamp).toLocaleTimeString();
+                    const cls = getRecordClass(record.type);
+                    const content = getRecordContent(record);
+
+                    html += '<div class="record ' + cls + '">';
+                    html += '<div class="record-time">' + time + '</div>';
+                    html += '<div class="record-label">' + content.label + '</div>';
+                    if (content.explanation) {
+                        html += '<div class="record-explanation">' + content.explanation + '</div>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div></div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        function renderSearchResults(results) {
+            const content = document.getElementById('content');
+            if (!results || results.length === 0) {
+                content.innerHTML = '<div class="empty-state"><h2>No Results</h2><p>Try a different search query.</p></div>';
+                return;
+            }
+
+            let html = '';
+            for (const record of results) {
+                const time = new Date(record.timestamp).toLocaleString();
+                const cls = getRecordClass(record.type);
+                const content = getRecordContent(record);
+
+                html += '<div class="record ' + cls + '">';
+                html += '<div class="record-time">' + time + '</div>';
+                html += '<div class="record-label">' + content.label + '</div>';
+                if (content.explanation) {
+                    html += '<div class="record-explanation">' + content.explanation + '</div>';
+                }
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        function getRecordClass(type) {
+            switch (type) {
+                case 'terminal_command': return 'command';
+                case 'error': return 'error';
+                case 'file_save':
+                case 'file_rename': return 'file';
+                case 'ai_prompt': return 'ai';
+                case 'milestone': return 'milestone';
+                case 'git_action': return 'git';
+                default: return '';
+            }
+        }
+
+        function getRecordContent(record) {
+            switch (record.type) {
+                case 'terminal_command':
+                    return {
+                        label: '<span class="record-command">$ ' + escapeHtml(record.command) + '</span>',
+                        explanation: record.explanation
+                    };
+                case 'error':
+                    return {
+                        label: '<span class="record-error-msg">\u2717 ' + escapeHtml(record.error) + '</span>',
+                        explanation: record.diagnosis
+                    };
+                case 'file_save':
+                    return { label: record.fileName, explanation: record.path };
+                case 'file_rename':
+                    return { label: record.oldName + ' \u2192 ' + record.newName, explanation: '' };
+                case 'ai_prompt':
+                    return { label: escapeHtml((record.prompt || '').slice(0, 80)), explanation: 'via ' + record.source };
+                case 'milestone':
+                    return { label: record.label, explanation: record.explanation };
+                case 'git_action':
+                    return { label: 'git ' + record.action, explanation: record.explanation };
+                default:
+                    return { label: record.type, explanation: '' };
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function downloadExport(data) {
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'codeforge-export.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('search').addEventListener('input', function(e) {
+            search(e.target.value);
+        });
+
+        refresh();
+    </script>
+</body>
+</html>
