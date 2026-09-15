@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Session, Record, TerminalCommandRecord, ErrorRecord, FileSaveRecord, FileRenameRecord, AiPromptRecord, MilestoneRecord, GitActionRecord } from '../types';
+import type { Session, Record as CodeforgeRecord, TerminalCommandRecord, ErrorRecord, FileSaveRecord, FileRenameRecord, AiPromptRecord, MilestoneRecord, GitActionRecord } from '../types';
 import { CommandCard } from './CommandCard';
 import { ErrorCard } from './ErrorCard';
 

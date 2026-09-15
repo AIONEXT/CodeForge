@@ -16,17 +16,17 @@ export interface UseRecordBookResult {
   refresh: () => void;
 }
 
-function postToHost(message: Record<string, unknown>): void {
+function postToHost(message: { [key: string]: unknown }): void {
   if (typeof window === 'undefined') return;
   // VS Code webview API
-  const vscode = (window as Record<string, unknown>).__vscode;
+  const vscode = (window as { [key: string]: unknown }).__vscode;
   if (vscode && typeof vscode === 'object' && 'postMessage' in vscode) {
     (vscode as { postMessage: (msg: Record<string, unknown>) => void }).postMessage(message);
     return;
   }
   // JetBrains JCEF
-  if (typeof (window as Record<string, unknown>).JCEF === 'object') {
-    (window as Record<string, unknown>).JCEF = message;
+  if (typeof (window as { [key: string]: unknown }).JCEF === 'object') {
+    (window as { [key: string]: unknown }).JCEF = message;
     return;
   }
   // Fallback: custom event

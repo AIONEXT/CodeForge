@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import type { Session, Record } from '../types';
+import type { Session, Record as CodeforgeRecord } from '../types';
 
 interface DailyDigestProps {
   sessions: Session[];
 }
 
-function getRecordsByDay(sessions: Session[]): Map<string, Record[]> {
+function getRecordsByDay(sessions: Session[]): Map<string, CodeforgeRecord[]> {
   const byDay = new Map<string, Record[]>();
   for (const session of sessions) {
     for (const record of session.records) {
@@ -18,7 +18,7 @@ function getRecordsByDay(sessions: Session[]): Map<string, Record[]> {
   return byDay;
 }
 
-function computeStats(records: Record[]) {
+function computeStats(records: CodeforgeRecord[]) {
   const byType: Record<string, number> = {
     terminal_command: 0,
     error: 0,

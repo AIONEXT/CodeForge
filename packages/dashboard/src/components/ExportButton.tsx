@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { RecordBook, Session, Record } from '../types';
+import type { RecordBook, Session, Record as CodeforgeRecord } from '../types';
 
 interface ExportButtonProps {
   recordBook: RecordBook;

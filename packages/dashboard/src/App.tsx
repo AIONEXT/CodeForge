@@ -78,8 +78,6 @@ export const App: React.FC = () => {
     isLoading,
     activeTab,
     setActiveTab,
-    searchQuery,
-    setSearchQuery,
     filterType,
     setFilterType,
     selectedSessionId,
@@ -105,7 +103,6 @@ export const App: React.FC = () => {
 
   const handleSearchQueryChange = (q: string) => {
     setQuery(q);
-    setSearchQuery(q);
   };
 
   const handleFilterChange = (t: typeof filterType) => {
